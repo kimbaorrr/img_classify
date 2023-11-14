@@ -3,7 +3,7 @@ import setuptools
 with open('README.rst', 'r') as fh:
     long_description = fh.read()
 with open('requirements.txt', 'r') as fh:
-    requirements = [line.strip() for line in fh]
+    requirements = [line.strip() for line in fh.readlines()]
 
 setuptools.setup(
     name='img_classify',
