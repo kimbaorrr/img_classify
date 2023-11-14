@@ -118,14 +118,14 @@ class CheckBalance:
 			)
 			plt.xlabel('Nhãn')
 			plt.ylabel('Số lượng ảnh')
-			if not self.img_save_path == '':
+			if self.img_save_path != '':
 				plt.savefig(self.img_save_path)
 			plt.show()
 			v_max = max(y)
 			print(f'== MỨC CHÊNH LỆCH GIỮA CÁC NHÃN TẬP {self.ds_name.upper()} SO VỚI NHÃN CAO NHẤT==')
 			for a in range(len(y)):
 				print(f'Nhãn {self.class_names[a]}:', np.round(y[a] / v_max * 100, 3))
-		except:
+		except Exception:
 			raise Exception('Quá trình thống kê bị lỗi !')
 
 class ViewRandImage:
