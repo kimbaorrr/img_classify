@@ -1,6 +1,3 @@
-.. image:: docs/images/logo-wide.png
-  :alt: is-number logo
-
 img_classify
 =========
 
@@ -22,9 +19,6 @@ img_classify
 .. image:: https://img.shields.io/badge/Q&A-StackOverflow-orange.svg
    :target: https://stackoverflow.com/questions/tagged/python
    :alt: Q&A StackOverflow
-.. image:: https://img.shields.io/badge/chat-gitter-green.svg
-   :target: https://gitter.im/is-number/community
-   :alt: Gitter chat
 
 Thư viện Python chứa các công cụ dùng cho phân loại hình ảnh
 
