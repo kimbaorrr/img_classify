@@ -1,0 +1,18 @@
+[project]
+name = "img_classify"
+version = "1.0.0"
+authors = [
+  { name="Nguyễn Kim Bảo", email="nguyenkimbao.0708@gmail.com" },
+]
+description = "Thư viện Python chứa các công cụ dùng cho phân loại hình ảnh"
+readme = "README.rst"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/kimbaorrr/img_classify"
+"Bug Tracker" = "https://github.com/kimbaorrr/img_classify/issues"

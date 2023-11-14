@@ -2,7 +2,7 @@ img_classify
 =========
 
 .. image:: https://img.shields.io/pypi/v/is-number
-   :target: https://pypi.org/project/is-number/
+   :target: https://pypi.org/project/img_classify/
    :alt: PyPI
 .. image:: https://github.com/jacobtomlinson/is-number/workflows/CI/badge.svg
    :target: https://github.com/jacobtomlinson/is-number/actions?query=workflow%3ACI
@@ -27,7 +27,7 @@ Cài đặt
 
 .. code-block:: bash
 
-   pip install git@github.com:kimbaorrr/img_classify.git
+   pip install git@https://github.com/kimbaorrr/img_classify.git
 
 .. code-block:: bash
 
