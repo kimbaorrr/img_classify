@@ -35,39 +35,30 @@ class EvalofModelwithImage:
 
 		if type(images) is not np.ndarray:
 			raise TypeError('Tham số images phải là một Ndarray !')
-			return
 
 		if len(images) == 0:
 			raise IndexError('Tham số images chứa mảng rỗng !')
-			return
 
 		if type(pred_labels) is not np.ndarray:
 			raise TypeError('Tham số pred_labels phải là một Ndarray !')
-			return
 
 		if len(pred_labels) == 0:
 			raise IndexError('Tham số pred_labels chứa mảng rỗng !')
-			return
 
 		if type(true_labels) is not np.ndarray:
 			raise TypeError('Tham số true_labels phải là một Ndarray !')
-			return
 
 		if len(true_labels) == 0:
 			raise IndexError('Tham số true_labels chứa mảng rỗng !')
-			return
 
 		if type(class_names) not in (tuple, list):
 			raise TypeError('Tham số class_names phải là Tuple/List !')
-			return
 
 		if len(class_names) == 0:
 			raise IndexError('Tham số class_names chứa mảng rỗng !')
-			return
 
 		if cmap not in ('viridis', 'gray'):
 			raise ValueError('Tham số cmap chỉ được chỉ định là viridis hoặc gray !')
-			return
 
 		self.images = images
 		self.pred_labels = pred_labels
@@ -113,15 +104,13 @@ def eval_of_model_with_images(num_rows=5, num_cols=3, images=None, pred_labels=N
 	:param class_names: Tuple/List/Ndarray, chứa nhãn của tập dữ liệu
 	:param cmap: Str, chế độ ánh xạ màu (Mặc định: 'viridis')
 	:param img_save_path: Str, vị trí xuất ảnh đánh giá
-	:return: In khung nhìn trên ma trận num_rows * num_cols chứa ảnh & đồ thị đánh giá độ chính xác của mô hình
+	:: In khung nhìn trên ma trận num_rows * num_cols chứa ảnh & đồ thị đánh giá độ chính xác của mô hình
 	"""
 	if num_rows < 1 or num_cols < 1:
 		raise ValueError('Tham số num_rows & num_cols phải >= 1 !')
-		return
 
 	if type(num_rows) is not int or type(num_cols) is not int:
 		raise ValueError('Tham số num_rows & num_cols phải là kiểu Int !')
-		return
 
 	num_images = num_rows * num_cols
 	plt.figure(figsize=(2 * 2 * num_cols, 2 * num_rows))
@@ -132,7 +121,7 @@ def eval_of_model_with_images(num_rows=5, num_cols=3, images=None, pred_labels=N
 		plt.subplot(num_rows, 2 * num_cols, 2 * i + 2)
 		a.plot_value_array()
 	plt.tight_layout()
-	if not img_save_path == '':
+	if img_save_path != '':
 		plt.savefig(img_save_path)
 	plt.show()
 
@@ -145,7 +134,7 @@ def heatmap_plot(true_labels=None, pred_labels=None, class_names=None, categoric
 	:param class_names: Tuple/List, chứa tập nhãn của tập dữ liệu
 	:param categorical: True/False, xác định tập nhãn thực & nhãn dự đoán có Onehot Encode không ?
 	:param img_save_path: Str, vị trí xuất ảnh đánh giá (Mặc định: Vị trí hiện tại)
-	:return: In bản đồ nhiệt lên màn hình
+	:: In bản đồ nhiệt lên màn hình
 	"""
 	if categorical:
 		true_lb = np.argmax(true_labels, axis=1)
@@ -170,7 +159,7 @@ def heatmap_plot(true_labels=None, pred_labels=None, class_names=None, categoric
 		plt.xlabel('Nhãn dự đoán')
 		plt.ylabel('Nhãn thực')
 		plt.title('Đánh giá mô hình qua bản đồ nhiệt Heatmap')
-		if not img_save_path == '':
+		if img_save_path != '':
 			plt.savefig(img_save_path)
 		plt.show()
 
@@ -191,11 +180,9 @@ class EvalofTraining:
 	):
 		if type(history) not in (History, object):
 			raise TypeError('Tham số history phải là một đối tượng History !')
-			return
 
 		if not history:
 			raise IndexError('Tham số history chứa mảng rỗng !')
-			return
 
 		if not os.path.exists(img_save_path):
 			os.mkdir(img_save_path)
@@ -214,8 +201,8 @@ class EvalofTraining:
 		plt.ylabel('% (Percentage)')
 		plt.legend()
 		plt.grid(False if max(self.len_of_epochs) > 30 else True)
-		if not self.img_save_path == '':
-			plt.savefig(os.path.join(self.img_save_path, f'loss.jpg'))
+		if img_save_path != '':
+			plt.savefig(os.path.join(self.img_save_path, 'loss.jpg'))
 		plt.show()
 
 		plt.title('Accuracy')
@@ -227,6 +214,6 @@ class EvalofTraining:
 		plt.ylabel('% (Percentage)')
 		plt.legend()
 		plt.grid(False if max(self.len_of_epochs) > 30 else True)
-		if not self.img_save_path == '':
-			plt.savefig(os.path.join(self.img_save_path, f'accuracy.jpg'))
+		if img_save_path != '':
+			plt.savefig(os.path.join(self.img_save_path, 'accuracy.jpg'))
 		plt.show()

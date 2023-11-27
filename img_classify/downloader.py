@@ -6,12 +6,12 @@ from img_classify.others import get_root_dir
 
 class KaggleDownloader:
 	"""
-	Trình tải tập dữ liệu từ thư viện Kaggle
+	Dataset downloader from Kaggle library
 	Args:
-		dataset_name: Str, đặt tên cho tập dữ liệu
-		dataset_url: Str, đường dẫn đến tập dữ liệu trên Kaggle
+		dataset_name: Str, Set name for dataset
+		dataset_url: Str, Dataset URL suffix in format <owner>/<dataset-name>
 	Return:
-		Tập dữ liệu đã được tải & giải nén
+		The dataset has been downloaded & extracted to datasets folder
 	"""
 
 	def __init__(
@@ -21,11 +21,11 @@ class KaggleDownloader:
 	):
 
 		if dataset_name == '' or dataset_name is None:
-			raise ValueError('Tham số dataset_name không được để trống !')
+			raise ValueError('Parameter dataset_name can not be empty !')
 			return
 
 		if dataset_url == '' or dataset_url is None:
-			raise ValueError('Tham số dataset_url không được để trống !')
+			raise ValueError('Parameter dataset_url can not be empty !')
 			return
 
 		self.dataset_name = dataset_name.lower()
@@ -48,5 +48,5 @@ class KaggleDownloader:
 			)
 			print('=> Tải dữ liệu thành công !')
 			print(f'=> Tập dữ liệu của bạn được lưu tại: {ds}')
-		except:
-			raise Exception(f'Quá trình tải bị lỗi !')
+		except Exception:
+			raise Exception('Quá trình tải bị lỗi !')

@@ -241,7 +241,7 @@ def image_augmentation_by_class(dataset_path=None, batch_size=32, num_img=50, im
 def fix_imbalance_with_image_augmentation(dataset_path=None, img_size=(128, 128), img_model=None,
                                           class_names=None):
 	"""
-	Trình tăng cường ảnh theo nhãn
+	Tái cân bằng tập dữ liệu bằng phương pháp tăng cuờng ảnh
 	:param dataset_path: Str, đường dẫn tập dữ liệu
 	:param img_size: Tuple/List, kích thước ảnh (Mặc định: 128 x 128)
 	:param img_model: ImageDataGeneration, mô hình tăng cường ảnh (dùng hàm ImageDataGeneration)

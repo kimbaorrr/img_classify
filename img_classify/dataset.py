@@ -11,11 +11,11 @@ sns_global()
 
 class CheckFiles:
 	"""
-	Kiểm tra tệp & thư mục con trong thư mục cha
+	Check files & subdirectories in the parent directory
 	Args:
-		dir_path: Str, đường dẫn thư mục cha
+		dir_path: Str, Parent directory path
 	Returns:
-		Đếm số tệp & thư mục con có trong thư mục cha
+		Count the number of files & subdirectories in the parent directory
 	"""
 
 	def __init__(
@@ -24,25 +24,23 @@ class CheckFiles:
 	):
 
 		if dir_path == '' or dir_path is None:
-			raise ValueError('Tham số dir_path không được để trống !')
-			return
+			raise ValueError('Parameter dir_path can not be empty !')
 
 		if not os.path.exists(dir_path):
-			raise FileNotFoundError('Tham số dir_path chứa đường dẫn thư mục sai hoặc không tồn tại !')
-			return
+			raise FileNotFoundError('Parameter dir_path contains an invalid or non-existent directory path !')
 
 		self.dir_path = dir_path
 
-		for dir_root, dir_sub, file_names in os.walk(self.dir_path):
-			print(f'=> Có {len(dir_sub)} thư mục con và {len(file_names)} tệp trong {dir_root}')
+		for root_dir, sub_dir, files in os.walk(self.dir_path):
+			print(f'=> Have {len(sub_dir)} subdirectories & {len(files)} files in {root_dir}')
 
 class CreateLabelFromDir:
 	"""
-	Tạo nhãn cho tập dữ liệu (Lấy giá trị của từng thư mục con làm nhãn)
+	Create labels for a dataset (Get the value of each subdirectory as the label)
 	Args:
-		train_path: Str, đường dẫn thư mục Train
+		train_path: Str, Train directory path
 	Returns:
-		List/Tuple chứa nhãn của tập dữ liệu
+		List/Tuple containing labels of dataset
 	"""
 
 	def __init__(
@@ -51,26 +49,24 @@ class CreateLabelFromDir:
 	):
 
 		if train_path == '' or train_path is None:
-			raise ValueError('Tham số train_path không được để trống !')
-			return
+			raise ValueError('Parameter train_path can not be empty !')
 
 		if not os.path.exists(train_path):
-			raise FileNotFoundError('Tham số train_path chứa đường dẫn thư mục sai hoặc không tồn tại !')
-			return
+			raise FileNotFoundError('Parameter train_path contains an invalid or non-existent directory path !')
 
 		self.train_path = train_path
 		self.output = None
 
 		self.output = sorted(os.listdir(self.train_path))
-		print(f'=> Nhãn của bạn là: {self.output}')
+		print(f'=> Your label are: {self.output}')
 
 class CheckBalance:
 	"""
-	Kiểm tra độ cân bằng của tập dữ liệu
+	Check balance of label of dataset
 	Args:
-		dir_path: Str, Đường dẫn thư mục Train/Test
-		class_names: Tuple/List/Ndarray, chứa nhãn của tập dữ liệu
-		ds_name: Str, tên của tập dữ liệu (Train/Test) (Mặc định: Train)
+		dir_path: Str, Train/Test directory path
+		class_names: Tuple/List/Ndarray, containing label of dataset
+		ds_name: Str, The name of dataset (Train/Test) (Default: Train)
 		img_save_path: Str, vị trí xuất ảnh thống kê (Mặc định: Vị trí hiện tại)
 	Returns:
 		In đồ thị thống kê & tính độ chênh lệch giữa các nhãn
@@ -86,55 +82,48 @@ class CheckBalance:
 
 		if dir_path == '' or dir_path is None:
 			raise ValueError('Tham số dir_path không được để trống !')
-			return
 
 		if not os.path.exists(dir_path):
-			raise FileNotFoundError('Tham số dir_path chứa đường dẫn thư mục sai hoặc không tồn tại !')
-			return
+			raise FileNotFoundError('Parameter dir_path contains an invalid or non-existent directory path !')
 
 		if type(class_names) not in (tuple, list):
 			raise TypeError('Tham số class_names phải là Tuple hoặc List !')
-			return
 
 		if len(class_names) == 0:
 			raise IndexError('Tham số class_names chứa mảng rỗng !')
-			return
 
 		self.dir_path = dir_path
 		self.class_names = class_names
 		self.img_save_path = img_save_path
 		self.ds_name = ds_name
 
-		try:
-			y = []
-			for i in range(len(self.class_names)):
-				path = os.path.join(self.dir_path, self.class_names[i])
-				count = len(os.listdir(path))
-				y.append(count)
-			plt.title(f'Thống kê số lượng ảnh của từng nhãn thuộc tập {self.ds_name}')
-			sns.barplot(
-				x=self.class_names,
-				y=y
-			)
-			plt.xlabel('Nhãn')
-			plt.ylabel('Số lượng ảnh')
-			if self.img_save_path != '':
-				plt.savefig(self.img_save_path)
-			plt.show()
-			v_max = max(y)
-			print(f'== MỨC CHÊNH LỆCH GIỮA CÁC NHÃN TẬP {self.ds_name.upper()} SO VỚI NHÃN CAO NHẤT==')
-			for a in range(len(y)):
-				print(f'Nhãn {self.class_names[a]}:', np.round(y[a] / v_max * 100, 3))
-		except Exception:
-			raise Exception('Quá trình thống kê bị lỗi !')
+		y = []
+		for i in range(len(self.class_names)):
+			path = os.path.join(self.dir_path, self.class_names[i])
+			count = len(os.listdir(path))
+			y.append(count)
+		plt.title(f'Thống kê số lượng ảnh của từng nhãn thuộc tập {self.ds_name}')
+		sns.barplot(
+			x=self.class_names,
+			y=y
+		)
+		plt.xlabel('Nhãn')
+		plt.ylabel('Số lượng ảnh')
+		if self.img_save_path != '':
+			plt.savefig(self.img_save_path)
+		plt.show()
+		v_max = max(y)
+		print(f'== MỨC CHÊNH LỆCH GIỮA CÁC NHÃN TẬP {self.ds_name.upper()} SO VỚI NHÃN CAO NHẤT==')
+		for a in range(len(y)):
+			print(f'Nhãn {self.class_names[a]}:', np.round(y[a] / v_max * 100, 3))
 
-class ViewRandImage:
+class RandImageViewer:
 	"""
-	Trình in ảnh ngẫu nhiên
+	Random image viewer
 	Args:
-		dir_path: Str, Đường dẫn thư mục chứa ảnh
-		class_names: Tuple/List/Ndarray, chứa nhãn của tập dữ liệu
-		cmap: Str, chế độ ánh xạ màu (Mặc định: viridis)
+		dir_path: Str, Image directory path
+		class_names: Tuple/List/Ndarray, Containing label of dataset
+		cmap: Str, Choosing colormap (Default: viridis)
 	Returns:
 		In ảnh cùng với nhãn (x) và tên tệp (y) lên màn hình
 	"""
@@ -148,23 +137,18 @@ class ViewRandImage:
 
 		if dir_path == '' or dir_path is None:
 			raise ValueError('Tham số dir_path không được để trống !')
-			return
 
 		if not os.path.exists(dir_path):
 			raise FileNotFoundError('Tham số dir_path chứa đường dẫn thư mục sai hoặc không tồn tại !')
-			return
 
 		if type(class_names) not in (tuple, list):
 			raise TypeError('Tham số class_names phải là Tuple hoặc List !')
-			return
 
 		if len(class_names) == 0:
 			raise IndexError('Tham số class_names chứa mảng rỗng !')
-			return
 
 		if cmap not in ('viridis', 'gray'):
 			raise ValueError('Tham số cmap phải được chỉ định là viridis hoặc gray !')
-			return
 
 		self.dir_path = dir_path
 		self.class_names = class_names
