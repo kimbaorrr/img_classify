@@ -1,52 +1,42 @@
-import os
-
 import kaggle as kg
 
-from img_classify.others import get_root_dir
-
-class KaggleDownloader:
+def kaggle_downloader(ds_name=None, ds_url=None, save_path=None):
 	"""
-	Dataset downloader from Kaggle library
+	Trình tải tập dữ liệu từ thư viện Kaggle
 	Args:
-		dataset_name: Str, Set name for dataset
-		dataset_url: Str, Dataset URL suffix in format <owner>/<dataset-name>
+		ds_name: Str, đặt tên cho tập dữ liệu
+		ds_url: Str, chuỗi URL đến tập dữ liệu, định dạng: <owner>/<dataset-name>
+		save_path: Str, đường dẫn lưu tập dữ liệu
 	Return:
-		The dataset has been downloaded & extracted to datasets folder
+		Tập dữ liệu đã được tải & giải nén
 	"""
 
-	def __init__(
-		self,
-		dataset_name=None,
-		dataset_url=None
-	):
+	ds_name = ds_name.lower()
+	ds_url = ds_url.lower()
 
-		if dataset_name == '' or dataset_name is None:
-			raise ValueError('Parameter dataset_name can not be empty !')
-			return
+	if ds_name == '' or ds_name is None:
+		raise ValueError('Tham số dataset_name không được để trống !')
+		return
 
-		if dataset_url == '' or dataset_url is None:
-			raise ValueError('Parameter dataset_url can not be empty !')
-			return
+	if ds_url == '' or ds_url is None:
+		raise ValueError('Tham số dataset_url không được để trống !')
+		return
 
-		self.dataset_name = dataset_name.lower()
-		self.dataset_url = dataset_url.lower()
-		self.save_path = os.path.join(get_root_dir(), 'datasets')
+	if save_path == '' or save_path is None:
+		raise ValueError('Tham số save_path không được để trống !')
+		return
 
-		try:
-			# Kiểm tra bộ dữ liệu đã có hay chưa ?
-			ds = os.path.join(self.save_path, self.dataset_name)
-			if os.path.isdir(ds):
-				return
-			# Xác thực đăng nhập
-			kg.api.authenticate()
-			# Tải dữ liệu
-			kg.api.dataset_download_files(
-				self.dataset_url,
-				ds,
-				unzip=True,
-				quiet=False
-			)
-			print('=> Tải dữ liệu thành công !')
-			print(f'=> Tập dữ liệu của bạn được lưu tại: {ds}')
-		except Exception:
-			raise Exception('Quá trình tải bị lỗi !')
+	try:
+		# Xác thực đăng nhập
+		kg.api.authenticate()
+		# Tải dữ liệu
+		kg.api.dataset_download_files(
+			ds_url,
+			save_path,
+			unzip=True,
+			quiet=False
+		)
+		print('=> Tải dữ liệu thành công !')
+		print(f'=> Tập dữ liệu của bạn được lưu tại: {save_path}')
+	except Exception:
+		raise Exception('Quá trình tải bị lỗi !')
