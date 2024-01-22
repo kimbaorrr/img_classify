@@ -21,7 +21,7 @@ Cài đặt
 
 .. code-block:: bash
 
-   pip install git@https://github.com/kimbaorrr/img_classify.git
+   pip install git+https://github.com/kimbaorrr/img_classify.git
 
 .. code-block:: bash
 
