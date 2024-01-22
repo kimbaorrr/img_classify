@@ -5,6 +5,7 @@ from glob import glob
 import numpy as np
 import seaborn as sns
 from matplotlib import image as mlt, pyplot as plt
+
 from img_classify.others import sns_global
 
 sns_global()

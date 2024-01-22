@@ -10,3 +10,7 @@ Tính năng:
   3. evalute_model: chứa các công cụ dành cho việc đánh giá mô hình
   4. tools: chứa các công cụ khác...
 """
+
+from img_classify.others import sns_global
+
+sns_global()

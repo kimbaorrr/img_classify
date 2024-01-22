@@ -1,5 +1,4 @@
 import os
-import shutil
 
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
@@ -8,172 +7,108 @@ from PIL import Image
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 
-from img_classify.dataset import CheckBalance
-from img_classify.others import sns_global
+from img_classify.dataset import check_balance
 
-sns_global()
-
-def merge_dir(root_path, train_dir_name, test_dir_name, output_dir_name):
-	"""
-	Hợp nhất thư mục Train & Test
-	:param root_path: Str, quy định đường dẫn gốc của thư mục cha
-	:param train_dir_name: Str, quy định tên của thư mục Train
-	:param test_dir_name: Str, quy định tên của thư mục Test
-	:param output_dir_name: Str, quy định tên của thư mục đầu ra
-	: Di chuyển các tập tin trong thư mục Train & Test thuộc nhãn tương ứng vào thư mục output
-	"""
-
-	train_path = os.path.join(root_path, train_dir_name)
-	test_path = os.path.join(root_path, test_dir_name)
-	output_path = os.path.join(root_path, output_dir_name)
-
-	if not os.path.exists(output_path):
-		os.mkdir(output_path)
-	else:
-		raise FileExistsError('Tập dữ liệu đã hợp nhất trước đó. Thao tác này sẽ bị hủy bỏ !')
-
-	# Lấy danh sách các nhãn trong folder train.
-	train_labels = [
-		os.path.basename(f.path) for f in os.scandir(train_path) if f.is_dir()
-	]
-	# Lặp qua tất cả các nhãn.
-	for label in train_labels:
-		# Tạo một thư mục mới trong folder output với tên khớp với nhãn
-		output_label_dir = os.path.join(output_path, label)
-		os.mkdir(output_label_dir)
-		# Di chuyển tất cả các file trong thư mục `label` của folder cũ sang folder `label` của folder output.
-		for file in os.listdir(os.path.join(train_path, label)):
-			shutil.move(
-				str(os.path.join(train_path, label, file)), str(os.path.join(output_label_dir, file))
-			)
-		for file in os.listdir(os.path.join(test_path, label)):
-			shutil.move(
-				str(os.path.join(test_path, label, file)), str(os.path.join(output_label_dir, file))
-			)
-
-class ImagestoArray:
+def images_to_array(ds_path=None, class_names=None, img_size=(128, 128)):
 	"""
 	Chuyển đổi ảnh từ thư mục sang dạng mảng
 	Args:
-		dataset_path: Str, Đường dẫn thư mục chứa ảnh
-		class_names: Tuple/List/NdArray, chứa nhãn của tập dữ liệu
+		ds_path: Str, đường dẫn đến thư mục chứa ảnh
+		class_names: Tuple/List, chứa nhãn của tập dữ liệu
 		img_size: Tuple/List, quy định kích thước ảnh để Resize (Mặc định: 128x128)
 	Returns:
-		Ndarray được tách tiêng với images chứa tập ảnh và labels chứa tập nhãn (Tập nhãn đã được Onehot Encode)
+		List gồm images chứa tập ảnh và labels chứa tập nhãn (Tập nhãn đã được Onehot Encode)
 	"""
 
-	def __init__(
-		self,
-		dataset_path=None,
-		class_names=None,
-		img_size=(128, 128)
-	):
-		if not os.path.exists(dataset_path):
-			raise FileNotFoundError('Tham số dataset_path chứa đường dẫn thư mục sai hoặc không tồn tại !')
+	if not os.path.exists(ds_path):
+		raise FileNotFoundError('Tham số dataset_path chứa đường dẫn thư mục sai hoặc không tồn tại !')
 
-		if type(class_names) not in (tuple, list):
-			raise TypeError('Tham số class_names phải là kiểu Tuple/List !')
+	if type(class_names) not in (tuple, list):
+		raise TypeError('Tham số class_names phải là kiểu Tuple/List !')
 
-		if type(img_size) not in (tuple, list):
-			raise TypeError('Tham số img_size phải là kiểu Tuple/List !')
+	if type(img_size) not in (tuple, list):
+		raise TypeError('Tham số img_size phải là kiểu Tuple/List !')
 
-		self.dataset_path = dataset_path
-		self.class_names = class_names
-		self.img_size = img_size
-		self.images = []
-		self.labels = []
+	images = []
+	labels = []
 
-		len_of_class_names = len(self.class_names)
-		for i in range(len_of_class_names):
-			path = os.path.join(self.dataset_path, self.class_names[i])
-			for a in os.listdir(path):
-				with Image.open(os.path.join(path, a)) as image:
-					image = image.convert('RGB')
-					image = image.resize(self.img_size)
-					image = img_to_array(image)
-					self.images.append(image)
-					self.labels.append(i)
-		self.images = np.asarray(self.images, dtype=float)
-		self.labels = to_categorical(
-			np.asarray(self.labels, dtype=float), num_classes=len_of_class_names
-		)
+	len_of_class_names = len(class_names)
+	for i in range(len_of_class_names):
+		path = str(os.path.join(ds_path, class_names[i]))
+		for a in os.listdir(path):
+			with Image.open(os.path.join(path, a)) as image:
+				image = image.convert('RGB')
+				image = image.resize(img_size)
+				image = img_to_array(image)
+				images.append(image)
+				labels.append(i)
+	images = np.asarray(images, dtype=float)
+	labels = to_categorical(
+		np.asarray(labels, dtype=float), num_classes=len_of_class_names
+	)
+	return [images, labels]
 
-class TrainTestValSplit:
+def train_test_val_split(images=None, labels=None, train_size=.60, test_size=.20, val_size=.20, random_state=30):
 	"""
 	Tách tập dữ liệu để Train/Test/Val
 	Args:
-		images: Tuple/List/Ndarray, chứa tập gồm nhiều ảnh
-		labels: Tuple/List/Ndarray, chứa tập nhãn gốc để so sánh với kết quả dự đoán
-		train_size: Float, quy định kích thước tập Train (Mặc định: .60)
-		test_size: Float, quy định kích thước tập Test (Mặc định: .20)
-		val_size: Float, quy định kích thước tập Val (Mặc định: .20)
+		images: Ndarray, chứa tập gồm toàn bộ ảnh của tập dữ liệu
+		labels: Ndarray, chứa nhãn của tập dữ liệu
+		train_size: Float, đặt kích thước tập Train (Mặc định: .60)
+		test_size: Float, đặt kích thước tập Test (Mặc định: .20)
+		val_size: Float, đặt kích thước tập Val (Mặc định: .20)
+		random_state: Int, đặt tỉ lệ ngẫu nhiên
 	Returns:
-		Tuple chứa ảnh và nhãn đã tách cho mỗi tập Train/Test/Val
+		List gồm 3 tuple con chứa ảnh & nhãn đã tách cho mỗi tập Train/Test/Val
 	"""
+	if type(images) is not np.ndarray:
+		raise TypeError('Tham số images phải là một Ndarray !')
 
-	def __init__(
-		self,
-		images=None,
-		labels=None,
-		train_size=.60,
-		test_size=.20,
-		val_size=.20
-	):
-		if type(images) is not np.ndarray:
-			raise TypeError('Tham số images phải là một Ndarray !')
+	if len(images) == 0:
+		raise IndexError('Tham số images chứa mảng rỗng !')
 
-		if len(images) == 0:
-			raise IndexError('Tham số images chứa mảng rỗng !')
+	if type(images) is not np.ndarray:
+		raise TypeError('Tham số labels phải là một Ndarray !')
 
-		if type(images) is not np.ndarray:
-			raise TypeError('Tham số labels phải là một Ndarray !')
+	if len(images) == 0:
+		raise IndexError('Tham số images chứa mảng rỗng !')
 
-		if len(images) == 0:
-			raise IndexError('Tham số images chứa mảng rỗng !')
+	if not all([type(train_size) is float, type(test_size) is float, type(val_size) is float]):
+		raise ValueError('Tham số train_size, test_size, val_size phải là kiểu Float !')
 
-		if not all([type(train_size) is float, type(test_size) is float, type(val_size) is float]):
-			raise ValueError('Tham số train_size, test_size, val_size phải là kiểu Float !')
+	if not .01 <= train_size <= 1. or not .01 <= test_size <= 1. or not .01 <= val_size <= 1.:
+		raise ValueError('Tham số train_size, test_size, val_size phải từ .001 - 1. !')
 
-		if not .01 <= train_size <= 1. or not .01 <= test_size <= 1. or not .01 <= val_size <= 1.:
-			raise ValueError('Tham số train_size, test_size, val_size phải từ .001 - 1. !')
+	if not .01 <= train_size + test_size + val_size <= 1.:
+		raise ValueError('Tổng của 3 giá trị train_size, test_size, val_size phải từ .01 - 1. !')
 
-		if not .01 <= train_size + test_size + val_size <= 1.:
-			raise ValueError('Tổng của 3 giá trị train_size, test_size, val_size phải từ .01 - 1. !')
+	try:
+		images, labels = shuffle(images, labels)
+		train_images, test_images, train_labels, test_labels = train_test_split(
+			images,
+			labels,
+			train_size=train_size,
+			test_size=test_size,
+			stratify=labels
+		)
+		train_images, val_images, train_labels, val_labels = train_test_split(
+			train_images,
+			train_labels,
+			test_size=val_size,
+			stratify=train_labels
+		)
 
-		self.images = images
-		self.labels = labels
-		self.train_size = train_size
-		self.test_size = test_size
-		self.val_size = val_size
-		self.output = None
+		print('== Thống kê số lượng ảnh sau khi tách ==')
+		print(f'Train: {train_images.shape[0]} ảnh')
+		print(f'Test: {test_images.shape[0]} ảnh')
+		print(f'Val: {val_images.shape[0]} ảnh')
 
-		try:
-			images, labels = shuffle(images, labels)
-			train_images, test_images, train_labels, test_labels = train_test_split(
-				self.images,
-				self.labels,
-				train_size=self.train_size,
-				test_size=self.test_size,
-				stratify=labels
-			)
-			train_images, val_images, train_labels, val_labels = train_test_split(
-				train_images,
-				train_labels,
-				test_size=self.val_size,
-				stratify=train_labels
-			)
-
-			print('== Thống kê số lượng ảnh sau khi tách ==')
-			print(f'Train: {train_images.shape[0]} ảnh')
-			print(f'Test: {test_images.shape[0]} ảnh')
-			print(f'Val: {val_images.shape[0]} ảnh')
-
-			self.output = (train_images, train_labels), (test_images, test_labels), (
-				val_images, val_labels)
+		return [(train_images, train_labels), (test_images, test_labels), (
+			val_images, val_labels)]
 
 
-		except Exception as ex:
-			print('Quá trình tách dữ liệu bị lỗi !', str(ex))
+	except Exception as ex:
+		print('Quá trình tách dữ liệu bị lỗi !', str(ex))
 
 def image_augmentation_by_class(dataset_path=None, batch_size=32, num_img=50, img_size=(128, 128), img_model=None,
                                 class_names=None,
@@ -228,11 +163,11 @@ def image_augmentation_by_class(dataset_path=None, batch_size=32, num_img=50, im
 		images = shuffle(images)
 		i = 0
 		for _ in img_model.flow(
-			images,
-			batch_size=batch_size,
-			save_to_dir=image_path,
-			save_prefix='aug',
-			save_format='jpg'
+				images,
+				batch_size=batch_size,
+				save_to_dir=image_path,
+				save_prefix='aug',
+				save_format='jpg'
 		):
 			i += 1
 			if i > num_img:
@@ -267,7 +202,7 @@ def fix_imbalance_with_image_augmentation(dataset_path=None, img_size=(128, 128)
 	count_files_by_class = []
 
 	for i in class_names:
-		path = os.path.join(dataset_path, i)
+		path = str(os.path.join(dataset_path, i))
 		count = len(os.listdir(path))
 		count_files_by_class.append(count)
 	v_max = max(count_files_by_class)
@@ -291,18 +226,18 @@ def fix_imbalance_with_image_augmentation(dataset_path=None, img_size=(128, 128)
 			images = shuffle(images)
 			i = 0
 			for _ in img_model.flow(
-				images,
-				seed=69,
-				batch_size=1,
-				save_to_dir=image_path,
-				save_prefix='aug',
-				save_format='jpg'
+					images,
+					seed=69,
+					batch_size=1,
+					save_to_dir=image_path,
+					save_prefix='aug',
+					save_format='jpg'
 			):
 				i += 1
 				if i > num_img:
 					break
 
-	CheckBalance(
+	check_balance(
 		dataset_path,
 		class_names,
 		img_save_path=''
