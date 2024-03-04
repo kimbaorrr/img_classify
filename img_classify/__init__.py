@@ -1,7 +1,7 @@
 """
 img_classify (Thư viện dùng cho phân loại hình ảnh)
 Copyright 2023 BaoIT. All right reserved.
- Github: https://github.com/kimbaorr
+ Github: https://github.com/kimbaorrr
 ======
 
 Tính năng:

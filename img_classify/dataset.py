@@ -72,7 +72,7 @@ def check_balance(dir_path=None, class_names=None, ds_name='Train', img_save_pat
 		y_path = str(os.path.join(dir_path, class_names[i]))
 		count = len(os.listdir(y_path))
 		y.append(count)
-	plt.title(f'Thống kê số lượng ảnh của từng nhãn thuộc tập {self.ds_name}')
+	plt.title(f'Thống kê số lượng ảnh của từng nhãn thuộc tập {ds_name}')
 	sns.barplot(
 		x=class_names,
 		y=y
