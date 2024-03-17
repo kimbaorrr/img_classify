@@ -4,9 +4,9 @@ version = "1.0.0"
 authors = [
   { name="Nguyễn Kim Bảo", email="nguyenkimbao.0708@gmail.com" },
 ]
-description = "Thư viện Python chứa các công cụ dùng cho phân loại hình ảnh"
+description = "Các công cụ dùng cho phân loại hình ảnh"
 readme = "README.rst"
-requires-python = ">=3.11"
+requires-python = ">=3.11, <3.13"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",

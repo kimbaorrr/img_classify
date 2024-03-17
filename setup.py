@@ -10,7 +10,7 @@ setuptools.setup(
     version='1.0.0',
     author='Nguyễn Kim Bảo',
     author_email='nguyenkimbao.0708@gmail.com',
-    description='Thư viện Python chứa các công cụ dùng cho phân loại hình ảnh',
+    description='Các công cụ dùng cho phân loại hình ảnh',
     long_description=long_description,
     long_description_content_type='text/x-rst',
     packages=setuptools.find_packages(),

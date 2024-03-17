@@ -14,7 +14,7 @@ img_classify
    :target: https://app.codecov.io/gh/kimbaorrr/img_classify
    :alt: Codecov
 
-Thư viện Python chứa các công cụ dùng cho phân loại hình ảnh
+Các công cụ dùng cho phân loại hình ảnh
 
 Cài đặt
 ------------
