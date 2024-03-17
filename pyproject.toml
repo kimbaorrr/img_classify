@@ -6,7 +6,7 @@ authors = [
 ]
 description = "Các công cụ dùng cho phân loại hình ảnh"
 readme = "README.rst"
-requires-python = ">=3.11, <3.13"
+requires-python = ">=3.10, <3.13"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
