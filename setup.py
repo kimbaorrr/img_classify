@@ -14,7 +14,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type='text/x-rst',
     packages=setuptools.find_packages(),
-    python_requires='>=3.11',
+    python_requires='>=3.11, <3.13',
     install_requires=requirements,
     classifiers = [
         "Programming Language :: Python :: 3",

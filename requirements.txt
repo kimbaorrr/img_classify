@@ -1,6 +1,5 @@
 tensorflow==2.13.1
 seaborn
-matplotlib
 kaggle
-scikit-learn
-opencv-python
+scikit-learn==1.4.1.post1
+opencv-python==4.9.0
