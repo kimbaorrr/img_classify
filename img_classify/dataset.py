@@ -9,14 +9,14 @@ from matplotlib import image as mlt, pyplot as plt
 
 def check_balance(dir_path=None, classes=None, ds_name='Train', img_save_path='./check_balance.jpg'):
     """
-    Kiểm tra mức độ cân bằng của tập dữ liệu
+    Kiểm tra mức độ cân bằng giữa các lớp
     Args:
             dir_path: Str, đường dẫn thư mục Train/Test
             classes: Tuple/List, chứa nhãn của tập dữ liệu
             ds_name: Str, loại tập dữ liệu (Mặc định: Train)
             img_save_path: Str, vị trí xuất ảnh thống kê (Mặc định: Vị trí hiện tại)
     Returns:
-            In đồ thị thống kê & tính độ chênh lệch giữa các nhãn
+            In đồ thị thống kê & tính độ chênh lệch giữa các lớp
     """
 
     if dir_path == '' or dir_path is None:
