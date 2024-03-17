@@ -31,8 +31,8 @@ def images_to_array(ds_path=None, classes=None, img_size=(128, 128)):
     images = []
     labels = []
 
-    len_of_classes = len(classes)
-    for i in range(len_of_classes):
+    num_classes = len(classes)
+    for i in range(num_classes):
         path = str(os.path.join(ds_path, classes[i]))
         for a in os.listdir(path):
             with cv.imread(os.path.join(path, a), cv.COLOR_RGB2BGR) as image:
@@ -42,7 +42,7 @@ def images_to_array(ds_path=None, classes=None, img_size=(128, 128)):
                 labels.append(i)
     images = np.asarray(images, dtype=np.float32)
     labels = to_categorical(
-        np.asarray(labels, dtype=np.int8), num_classes=len_of_classes
+        np.asarray(labels, dtype=np.int8), num_classes=num_classes
     )
     return [images, labels]
 

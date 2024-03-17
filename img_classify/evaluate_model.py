@@ -84,9 +84,9 @@ class EvalofModelwithImage:
         plt.grid(False)
 
     def plot_value_array(self):
-        len_of_classes = len(self.classes)
-        plt.xticks(range(len_of_classes))
-        this_plot = plt.bar(range(len_of_classes),
+        num_classes = len(self.classes)
+        plt.xticks(range(num_classes))
+        this_plot = plt.bar(range(num_classes),
                             self.pred_labels[self.img_num], color="gray")
         plt.ylim([0, 1])
         this_plot[self.img_pred_label].set_color('r')
@@ -148,17 +148,17 @@ def heatmap_plot(true_labels=None, pred_labels=None, classes=None, categorical=T
 
     if len(classes) <= 30:
         cm = confusion_matrix(true_lb, pred_lb)
-        len_of_classes = len(classes)
-        if len_of_classes < 8:
+        num_classes = len(classes)
+        if num_classes < 8:
             fig_width = 8
             fig_height = 8
         else:
-            fig_width = int(len_of_classes * .5)
-            fig_height = int(len_of_classes * .5)
+            fig_width = int(num_classes * .5)
+            fig_height = int(num_classes * .5)
         plt.figure(figsize=(fig_width, fig_height))
         sns.heatmap(cm, annot=True, vmin=0, fmt='g', cmap='Blues', cbar=True)
-        plt.xticks(np.arange(len_of_classes) + .5, classes)
-        plt.yticks(np.arange(len_of_classes) + .5, classes)
+        plt.xticks(np.arange(num_classes) + .5, classes)
+        plt.yticks(np.arange(num_classes) + .5, classes)
         plt.xlabel('Nhãn dự đoán')
         plt.ylabel('Nhãn thực')
         plt.title('Đánh giá mô hình qua bản đồ nhiệt Heatmap')
