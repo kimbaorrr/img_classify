@@ -20,7 +20,7 @@ def images_to_array(ds_path=None, classes=None, img_size=(128, 128)):
 
     if not os.path.exists(ds_path):
         raise FileNotFoundError(
-            'Tham số dataset_path chứa đường dẫn thư mục sai hoặc không tồn tại !')
+            'Tham số ds_path chứa đường dẫn thư mục sai hoặc không tồn tại !')
 
     if type(classes) not in (tuple, list):
         raise TypeError('Tham số classes phải là kiểu Tuple/List !')
@@ -33,7 +33,7 @@ def images_to_array(ds_path=None, classes=None, img_size=(128, 128)):
 
     num_classes = len(classes)
     for i in range(num_classes):
-        path = str(os.path.join(ds_path, classes[i]))
+        path = os.path.join(ds_path, classes[i])
         for a in os.listdir(path):
             with cv.imread(os.path.join(path, a), cv.COLOR_RGB2BGR) as image:
                 image = cv.resize(image, img_size)
@@ -113,12 +113,12 @@ def train_test_val_split(images=None, labels=None, train_size=.60, test_size=.20
         print('Quá trình tách dữ liệu bị lỗi !', str(ex))
 
 
-def image_augmentation_by_class(dataset_path=None, batch_size=32, num_img=50, img_size=(128, 128), img_model=None,
+def image_augmentation_by_class(ds_path=None, batch_size=32, num_img=50, img_size=(128, 128), img_model=None,
                                 classes=None,
                                 exclude_class=None):
     """
     Trình tăng cường ảnh theo nhãn
-    :param dataset_path: Str, đường dẫn tập dữ liệu
+    :param ds_path: Str, đường dẫn tập dữ liệu
     :param batch_size: Int, kích thước mỗi lô
     :param num_img: Int, số lượng ảnh cho mỗi nhãn (Mặc định: 50)
     :param img_size: Tuple/List, kích thước ảnh (Mặc định: 128 x 128)
@@ -128,12 +128,12 @@ def image_augmentation_by_class(dataset_path=None, batch_size=32, num_img=50, im
     :: Xuất ảnh đã tăng cường vào từng thư mục con của mỗi nhãn
     """
 
-    if dataset_path == '' or dataset_path is None:
-        raise ValueError('Tham số dataset_path không được để trống !')
+    if ds_path == '' or ds_path is None:
+        raise ValueError('Tham số ds_path không được để trống !')
 
-    if not os.path.exists(dataset_path):
+    if not os.path.exists(ds_path):
         raise FileNotFoundError(
-            'Tham số dataset_path chứa đường dẫn thư mục sai hoặc không tồn tại !')
+            'Tham số ds_path chứa đường dẫn thư mục sai hoặc không tồn tại !')
 
     if type(num_img) is not int:
         raise TypeError('Tham số num_img phải là kiểu Int !')
@@ -155,7 +155,7 @@ def image_augmentation_by_class(dataset_path=None, batch_size=32, num_img=50, im
         if label in exclude_class:
             continue
         images = []
-        image_path = dataset_path + '/' + label + '/'
+        image_path = os.path.join(ds_path, label)
         for image in os.listdir(image_path):
             if image.split('.')[1] in ('jpg', 'png', 'jpeg'):
                 with cv.imread(os.path.join(image_path, image), cv.COLOR_RGB2BGR) as img:
@@ -176,23 +176,23 @@ def image_augmentation_by_class(dataset_path=None, batch_size=32, num_img=50, im
                 break
 
 
-def fix_imbalance_with_image_augmentation(dataset_path=None, img_size=(128, 128), img_model=None,
+def fix_imbalance_with_image_augmentation(ds_path=None, img_size=(128, 128), img_model=None,
                                           classes=None):
     """
     Tái cân bằng tập dữ liệu bằng phương pháp tăng cuờng ảnh
-    :param dataset_path: Str, đường dẫn tập dữ liệu
+    :param ds_path: Str, đường dẫn tập dữ liệu
     :param img_size: Tuple/List, kích thước ảnh (Mặc định: 128 x 128)
     :param img_model: ImageDataGeneration, mô hình tăng cường ảnh (dùng hàm ImageDataGeneration)
     :param classes: Tuple/List, chứa nhãn của tập dữ liệu
     :: Xuất ảnh đã tăng cường vào từng thư mục con của mỗi nhãn
     """
 
-    if dataset_path == '' or dataset_path is None:
-        raise ValueError('Tham số dataset_path không được để trống !')
+    if ds_path == '' or ds_path is None:
+        raise ValueError('Tham số ds_path không được để trống !')
 
-    if not os.path.exists(dataset_path):
+    if not os.path.exists(ds_path):
         raise FileNotFoundError(
-            'Tham số dataset_path chứa đường dẫn thư mục sai hoặc không tồn tại !')
+            'Tham số ds_path chứa đường dẫn thư mục sai hoặc không tồn tại !')
 
     if type(img_size) not in (tuple, list):
         raise TypeError('Tham số img_size phải là kiểu Tuple/List !')
@@ -206,7 +206,7 @@ def fix_imbalance_with_image_augmentation(dataset_path=None, img_size=(128, 128)
     count_files_by_class = []
 
     for i in classes:
-        path = str(os.path.join(dataset_path, i))
+        path = os.path.join(ds_path, i)
         count = len(os.listdir(path))
         count_files_by_class.append(count)
     v_max = max(count_files_by_class)
@@ -217,7 +217,7 @@ def fix_imbalance_with_image_augmentation(dataset_path=None, img_size=(128, 128)
             print(f'Loại trừ nhãn {a_class} do đã cân bằng !')
         else:
             images = []
-            image_path = dataset_path + '/' + a_class + '/'
+            image_path = os.path.join(ds_path, a_class)
             print(f'Bắt đầu khởi tạo thêm {num_img} ảnh cho nhãn {a_class}')
             for image in os.listdir(image_path):
                 if image.split('.')[1] in ('jpg', 'png', 'webp'):

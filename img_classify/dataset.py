@@ -34,7 +34,7 @@ def check_balance(dir_path=None, classes=None, ds_name='Train', img_save_path='.
 
     y = []
     for i in range(len(classes)):
-        y_path = str(os.path.join(dir_path, classes[i]))
+        y_path = os.path.join(dir_path, classes[i])
         count = len(os.listdir(y_path))
         y.append(count)
     plt.title(f'Thống kê số lượng ảnh của từng nhãn thuộc tập {ds_name}')
@@ -83,11 +83,11 @@ def rand_image_viewer(dir_path=None, classes=None, cmap='viridis'):
             'Tham số cmap phải được chỉ định là viridis hoặc gray !')
 
     a = random.randint(0, len(classes) - 1)
-    path = str(os.path.join(dir_path, classes[a]))
+    path = os.path.join(dir_path, classes[a])
     for i in ('*.jpg', '*.png, *.jpeg'):
         images_list = random.sample(glob(os.path.join(path, i)), 1)
     show_image = images_list[0]
-    image = mlt.imread(path + '/' + show_image)
+    image = mlt.imread(os.path.join(path, show_image))
     plt.imshow(image, cmap=cmap)
     plt.xlabel(classes[a])
     plt.colorbar()
