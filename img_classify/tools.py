@@ -2,10 +2,10 @@ import os
 
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
-from keras.utils import to_categorical
+from keras.utils import to_categorical, img_to_array
 import cv2 as cv
 from sklearn.model_selection import train_test_split
-
+from PIL import Image
 
 def images_to_array(ds_path=None, classes=None, img_size=(128, 128)):
     """
@@ -35,7 +35,7 @@ def images_to_array(ds_path=None, classes=None, img_size=(128, 128)):
     for i in range(num_classes):
         path = os.path.join(ds_path, classes[i])
         for a in os.listdir(path):
-            with cv.imread(os.path.join(path, a), cv.COLOR_RGB2BGR) as image:
+            with cv.imread(os.path.join(path, a), 1) as image:
                 image = cv.resize(image, img_size)
                 image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
                 images.append(image)
@@ -158,10 +158,11 @@ def image_augmentation_by_class(ds_path=None, batch_size=32, num_img=50, img_siz
         image_path = os.path.join(ds_path, label)
         for image in os.listdir(image_path):
             if image.split('.')[1] in ('jpg', 'png', 'jpeg'):
-                with cv.imread(os.path.join(image_path, image), cv.COLOR_RGB2BGR) as img:
-                    img = cv.resize(img, img_size)
-                    img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
-                    images.append(img)
+                with Image.open(os.path.join(image_path, image)) as img:
+                       img = img.convert('RGB')
+                       img = img.resize(img_size)
+                       img = img_to_array(img)
+                       images.append(img)
         images = np.asarray(images, dtype=np.float32)
         i = 0
         for _ in img_model.flow(
@@ -221,10 +222,11 @@ def fix_imbalance_with_image_augmentation(ds_path=None, img_size=(128, 128), img
             print(f'Bắt đầu khởi tạo thêm {num_img} ảnh cho nhãn {a_class}')
             for image in os.listdir(image_path):
                 if image.split('.')[1] in ('jpg', 'png', 'webp'):
-                    with cv.imread(os.path.join(image_path, image), cv.COLOR_RGB2BGR) as img:
-                        img = cv.resize(img, img_size)
-                        img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
-                        images.append(img)
+                   with Image.open(os.path.join(image_path, image)) as img:
+                       img = img.convert('RGB')
+                       img = img.resize(img_size)
+                       img = img_to_array(img)
+                       images.append(img)
             images = np.asarray(images, dtype=np.float32)
             i = 0
             for _ in img_model.flow(

@@ -12,7 +12,7 @@ def check_balance(dir_path=None, classes=None, ds_name='Train', img_save_path='.
     Kiểm tra mức độ cân bằng giữa các lớp
     Args:
             dir_path: Str, đường dẫn thư mục Train/Test
-            classes: Tuple/List, chứa nhãn của tập dữ liệu
+            classes: Tuple/List, chứa các lớp của tập dữ liệu
             ds_name: Str, loại tập dữ liệu (Mặc định: Train)
             img_save_path: Str, vị trí xuất ảnh thống kê (Mặc định: Vị trí hiện tại)
     Returns:
@@ -37,7 +37,7 @@ def check_balance(dir_path=None, classes=None, ds_name='Train', img_save_path='.
         y_path = os.path.join(dir_path, classes[i])
         count = len(os.listdir(y_path))
         y.append(count)
-    plt.title(f'Thống kê số lượng ảnh của từng nhãn thuộc tập {ds_name}')
+    plt.title(f'Thống kê số lượng ảnh của từng lớp thuộc tập {ds_name}')
     sns.barplot(
         x=classes,
         y=y
@@ -59,10 +59,10 @@ def rand_image_viewer(dir_path=None, classes=None, cmap='viridis'):
     Trình xem ảnh ngẫu nhiên
     Args:
             dir_path: Str, đường dẫn thư mục ảnh
-            classes: Tuple/List, chứa nhãn của tập dữ liệu
+            classes: Tuple/List, chứa các lớp của tập dữ liệu
             cmap: Str, tên bản đồ màu (Default: viridis)
     Returns:
-            In ảnh cùng với nhãn (x) và tên tệp (y) lên màn hình
+            In ảnh cùng với lớp (x) và tên tệp (y) lên màn hình
     """
 
     if dir_path == '' or dir_path is None:
