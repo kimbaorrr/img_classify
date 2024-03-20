@@ -2,49 +2,9 @@ import os
 
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
-from keras.utils import to_categorical, img_to_array
-import cv2 as cv
+from keras.utils import img_to_array
 from sklearn.model_selection import train_test_split
 from PIL import Image
-
-def images_to_array(ds_path=None, classes=None, img_size=(128, 128)):
-    """
-    Chuyển đổi ảnh từ thư mục sang dạng mảng
-    Args:
-            ds_path: Str, đường dẫn đến thư mục chứa ảnh
-            classes: Tuple/List, chứa nhãn của tập dữ liệu
-            img_size: Tuple/List, quy định kích thước ảnh để Resize (Mặc định: 128x128)
-    Returns:
-            List gồm images chứa tập ảnh và labels chứa tập nhãn (Tập nhãn đã được Onehot Encode)
-    """
-
-    if not os.path.exists(ds_path):
-        raise FileNotFoundError(
-            'Tham số ds_path chứa đường dẫn thư mục sai hoặc không tồn tại !')
-
-    if type(classes) not in (tuple, list):
-        raise TypeError('Tham số classes phải là kiểu Tuple/List !')
-
-    if type(img_size) not in (tuple, list):
-        raise TypeError('Tham số img_size phải là kiểu Tuple/List !')
-
-    images = []
-    labels = []
-
-    num_classes = len(classes)
-    for i in range(num_classes):
-        path = os.path.join(ds_path, classes[i])
-        for a in os.listdir(path):
-            with cv.imread(os.path.join(path, a), 1) as image:
-                image = cv.resize(image, img_size)
-                image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
-                images.append(image)
-                labels.append(i)
-    images = np.asarray(images, dtype=np.float32)
-    labels = to_categorical(
-        np.asarray(labels, dtype=np.int8), num_classes=num_classes
-    )
-    return [images, labels]
 
 
 def train_test_val_split(images=None, labels=None, train_size=.60, test_size=.20, val_size=.20, random_state=30):
@@ -123,7 +83,7 @@ def image_augmentation_by_class(ds_path=None, batch_size=32, num_img=50, img_siz
     :param num_img: Int, số lượng ảnh cho mỗi nhãn (Mặc định: 50)
     :param img_size: Tuple/List, kích thước ảnh (Mặc định: 128 x 128)
     :param img_model: ImageDataGeneration, mô hình tăng cường ảnh (dùng hàm ImageDataGeneration)
-    :param classes: Tuple/List, chứa nhãn của tập dữ liệu
+    :param classes: Tuple/List, chứa các lớp của tập dữ liệu
     :param exclude_class: Tuple/List, chứa các nhãn bị loại trừ khi tăng cường ảnh
     :: Xuất ảnh đã tăng cường vào từng thư mục con của mỗi nhãn
     """
@@ -159,10 +119,10 @@ def image_augmentation_by_class(ds_path=None, batch_size=32, num_img=50, img_siz
         for image in os.listdir(image_path):
             if image.split('.')[1] in ('jpg', 'png', 'jpeg'):
                 with Image.open(os.path.join(image_path, image)) as img:
-                       img = img.convert('RGB')
-                       img = img.resize(img_size)
-                       img = img_to_array(img)
-                       images.append(img)
+                    img = img.convert('RGB')
+                    img = img.resize(img_size)
+                    img = img_to_array(img)
+                    images.append(img)
         images = np.asarray(images, dtype=np.float32)
         i = 0
         for _ in img_model.flow(
@@ -222,11 +182,11 @@ def fix_imbalance_with_image_augmentation(ds_path=None, img_size=(128, 128), img
             print(f'Bắt đầu khởi tạo thêm {num_img} ảnh cho nhãn {a_class}')
             for image in os.listdir(image_path):
                 if image.split('.')[1] in ('jpg', 'png', 'webp'):
-                   with Image.open(os.path.join(image_path, image)) as img:
-                       img = img.convert('RGB')
-                       img = img.resize(img_size)
-                       img = img_to_array(img)
-                       images.append(img)
+                    with Image.open(os.path.join(image_path, image)) as img:
+                        img = img.convert('RGB')
+                        img = img.resize(img_size)
+                        img = img_to_array(img)
+                        images.append(img)
             images = np.asarray(images, dtype=np.float32)
             i = 0
             for _ in img_model.flow(

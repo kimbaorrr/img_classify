@@ -129,7 +129,7 @@ def eval_of_model_with_images(num_rows=5, num_cols=3, images=None, pred_labels=N
 
 
 def heatmap_plot(true_labels=None, pred_labels=None, classes=None, categorical=True,
-                 img_save_path='./eval_of_model_with_heatmap.jpg'):
+                 img_save_path=''):
     """
     Trình tạo bản đồ nhiệt (Heatmap) để đánh giá mô hình
     :param true_labels: NdArray, chứa tập nhãn thực

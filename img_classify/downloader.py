@@ -39,5 +39,5 @@ def kaggle_downloader(ds_name=None, ds_url=None, save_path=None):
         )
         print('=> Tải dữ liệu thành công !')
         print(f'=> Tập dữ liệu của bạn được lưu tại: {save_path}')
-    except Exception:
+    except:
         raise Exception('Quá trình tải bị lỗi !')
