@@ -105,7 +105,7 @@ def eval_of_model_with_images(num_rows=5, num_cols=3, images=None, pred_labels=N
     :param classes: Tuple/List/Ndarray, chứa nhãn của tập dữ liệu
     :param cmap: Str, chế độ ánh xạ màu (Mặc định: 'viridis')
     :param img_save_path: Str, vị trí xuất ảnh đánh giá
-    :: In khung nhìn trên ma trận num_rows * num_cols chứa ảnh & đồ thị đánh giá độ chính xác của mô hình
+    :return In khung nhìn trên ma trận num_rows * num_cols chứa ảnh & đồ thị đánh giá độ chính xác của mô hình
     """
     if num_rows < 1 or num_cols < 1:
         raise ValueError('Tham số num_rows & num_cols phải >= 1 !')
@@ -137,7 +137,7 @@ def heatmap_plot(true_labels=None, pred_labels=None, classes=None, categorical=T
     :param classes: Tuple/List, chứa tập nhãn của tập dữ liệu
     :param categorical: True/False, xác định tập nhãn thực & nhãn dự đoán có Onehot Encode không ?
     :param img_save_path: Str, vị trí xuất ảnh đánh giá (Mặc định: Vị trí hiện tại)
-    :: In bản đồ nhiệt lên màn hình
+    :return In bản đồ nhiệt lên màn hình
     """
     if categorical:
         true_lb = np.argmax(true_labels, axis=1)

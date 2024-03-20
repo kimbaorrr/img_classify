@@ -5,20 +5,18 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import img_to_array
 from sklearn.model_selection import train_test_split
 from PIL import Image
-
+import random
 
 def train_test_val_split(images=None, labels=None, train_size=.60, test_size=.20, val_size=.20, random_state=30):
     """
     Tách tập dữ liệu để Train/Test/Val
-    Args:
-            images: Ndarray, chứa tập gồm toàn bộ ảnh của tập dữ liệu
-            labels: Ndarray, chứa nhãn của tập dữ liệu
-            train_size: Float, đặt kích thước tập Train (Mặc định: .60)
-            test_size: Float, đặt kích thước tập Test (Mặc định: .20)
-            val_size: Float, đặt kích thước tập Val (Mặc định: .20)
-            random_state: Int, đặt tỉ lệ ngẫu nhiên
-    Returns:
-            List gồm 3 tuple con chứa ảnh & nhãn đã tách cho mỗi tập Train/Test/Val
+    :param images: Ndarray, chứa tập gồm toàn bộ ảnh của tập dữ liệu
+    :param labels: Ndarray, chứa nhãn của tập dữ liệu
+    :param train_size: Float, đặt kích thước tập Train (Mặc định: .60)
+    :param test_size: Float, đặt kích thước tập Test (Mặc định: .20)
+    :param val_size: Float, đặt kích thước tập Val (Mặc định: .20)
+    :param random_state: Int, đặt tỉ lệ ngẫu nhiên
+    :return List gồm 3 tuple con chứa ảnh & nhãn đã tách cho mỗi tập Train/Test/Val
     """
     if type(images) is not np.ndarray:
         raise TypeError('Tham số images phải là một Ndarray !')
@@ -85,7 +83,7 @@ def image_augmentation_by_class(ds_path=None, batch_size=32, num_img=50, img_siz
     :param img_model: ImageDataGeneration, mô hình tăng cường ảnh (dùng hàm ImageDataGeneration)
     :param classes: Tuple/List, chứa các lớp của tập dữ liệu
     :param exclude_class: Tuple/List, chứa các nhãn bị loại trừ khi tăng cường ảnh
-    :: Xuất ảnh đã tăng cường vào từng thư mục con của mỗi nhãn
+    :return Xuất ảnh đã tăng cường vào từng thư mục con của mỗi nhãn
     """
 
     if ds_path == '' or ds_path is None:
@@ -145,7 +143,7 @@ def fix_imbalance_with_image_augmentation(ds_path=None, img_size=(128, 128), img
     :param img_size: Tuple/List, kích thước ảnh (Mặc định: 128 x 128)
     :param img_model: ImageDataGeneration, mô hình tăng cường ảnh (dùng hàm ImageDataGeneration)
     :param classes: Tuple/List, chứa nhãn của tập dữ liệu
-    :: Xuất ảnh đã tăng cường vào từng thư mục con của mỗi nhãn
+    :return Xuất ảnh đã tăng cường vào từng thư mục con của mỗi nhãn
     """
 
     if ds_path == '' or ds_path is None:
@@ -200,3 +198,31 @@ def fix_imbalance_with_image_augmentation(ds_path=None, img_size=(128, 128), img
                 i += 1
                 if i > num_img:
                     break
+
+
+def random_rgb_color(num_color=3):
+    """
+    Trình tạo màu RGB ngẫu nhiên
+    :param num_color: Int, số lượng màu muốn khởi tạo (Mặc định: 3)
+    :return List chứa màu RGB được tạo ngẫu nhiên
+    """
+
+    if type(num_color) is not int or num_color <= 0:
+        raise ValueError('Tham số num_color phải là kiểu Int & lớn hơn 0 !')
+
+    colors = tuple(np.random.choice(range(256), size=3))
+    colors = [colors for _ in range(num_color)]
+    return colors
+
+def random_hex_color(num_color=3):
+    """
+    Trình tạo màu Hex ngẫu nhiên
+    :param num_color: Int, số lượng màu muốn khởi tạo (Mặc định: 3)
+    :return List chứa màu Hex được tạo ngẫu nhiên
+    """
+    if type(num_color) is not int or num_color <= 0:
+        raise ValueError('Tham số num_color phải là kiểu Int & lớn hơn 0 !')
+    
+    hex_colors = '#' + str().join(random.choice('ABCDEF0123456789') for _ in range(6))
+    hex_colors = [hex_colors for _ in range(num_color)]
+    return hex_colors

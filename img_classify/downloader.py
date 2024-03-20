@@ -4,12 +4,10 @@ import kaggle as kg
 def kaggle_downloader(ds_name=None, ds_url=None, save_path=None):
     """
     Trình tải tập dữ liệu từ thư viện Kaggle
-    Args:
-            ds_name: Str, đặt tên cho tập dữ liệu
-            ds_url: Str, chuỗi URL đến tập dữ liệu, định dạng: <owner>/<dataset-name>
-            save_path: Str, đường dẫn lưu tập dữ liệu
-    Return:
-            Tập dữ liệu đã được tải & giải nén
+    :param ds_name: Str, đặt tên cho tập dữ liệu
+    :param ds_url: Str, chuỗi URL đến tập dữ liệu, định dạng: <owner>/<dataset-name>
+    :param save_path: Str, đường dẫn lưu tập dữ liệu
+    :return Tập dữ liệu đã được tải & giải nén
     """
 
     ds_name = ds_name.lower()
