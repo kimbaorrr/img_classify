@@ -1,5 +1,4 @@
 tensorflow==2.13.1
 seaborn
 kaggle
-scikit-learn==1.4.1.post1
-opencv-python==4.9.0.*
+scikit-learn

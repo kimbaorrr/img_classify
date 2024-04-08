@@ -2,10 +2,10 @@ import os
 
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
-from keras.utils import img_to_array
 from sklearn.model_selection import train_test_split
-from PIL import Image
+import cv2 as cv
 import random
+
 
 def train_test_val_split(images=None, labels=None, train_size=.60, test_size=.20, val_size=.20, random_state=30):
     """
@@ -116,11 +116,9 @@ def image_augmentation_by_class(ds_path=None, batch_size=32, num_img=50, img_siz
         image_path = os.path.join(ds_path, label)
         for image in os.listdir(image_path):
             if image.split('.')[1] in ('jpg', 'png', 'jpeg'):
-                with Image.open(os.path.join(image_path, image)) as img:
-                    img = img.convert('RGB')
-                    img = img.resize(img_size)
-                    img = img_to_array(img)
-                    images.append(img)
+                img = cv.imread(os.path.join(image_path, image), 1)
+                img = img.resize(img_size)
+                images.append(img)
         images = np.asarray(images, dtype=np.float32)
         i = 0
         for _ in img_model.flow(
@@ -162,31 +160,28 @@ def fix_imbalance_with_image_augmentation(ds_path=None, img_size=(128, 128), img
     if type(classes) not in (tuple, list):
         raise TypeError('Tham số classes phải là kiểu Tuple/List !')
 
-    count_files_by_class = []
+    count_files_per_class = []
 
     for i in classes:
         path = os.path.join(ds_path, i)
-        count = len(os.listdir(path))
-        count_files_by_class.append(count)
-    v_max = max(count_files_by_class)
+        count_files_per_class.append(len(os.listdir(path)))
+    v_max = max(count_files_per_class)
     for a in range(len(classes)):
         a_class = classes[a]
-        num_img = v_max - count_files_by_class[a]
-        if count_files_by_class[a] / v_max >= .95:
+        num_img = v_max - count_files_per_class[a]
+        if count_files_per_class[a] / v_max >= .95:
             print(f'Loại trừ nhãn {a_class} do đã cân bằng !')
         else:
             images = []
+            i = 0
             image_path = os.path.join(ds_path, a_class)
             print(f'Bắt đầu khởi tạo thêm {num_img} ảnh cho nhãn {a_class}')
             for image in os.listdir(image_path):
                 if image.split('.')[1] in ('jpg', 'png', 'webp'):
-                    with Image.open(os.path.join(image_path, image)) as img:
-                        img = img.convert('RGB')
-                        img = img.resize(img_size)
-                        img = img_to_array(img)
-                        images.append(img)
-            images = np.asarray(images, dtype=np.float32)
-            i = 0
+                    img = cv.imread(os.path.join(image_path, image), 1)
+                    img = img.resize(img_size)
+                    images.append(img)
+            images = np.asarray(images, dtype=np.float16)
             for _ in img_model.flow(
                 images,
                 seed=69,
@@ -214,6 +209,7 @@ def random_rgb_color(num_color=3):
     colors = [colors for _ in range(num_color)]
     return colors
 
+
 def random_hex_color(num_color=3):
     """
     Trình tạo màu Hex ngẫu nhiên
@@ -222,7 +218,8 @@ def random_hex_color(num_color=3):
     """
     if type(num_color) is not int or num_color <= 0:
         raise ValueError('Tham số num_color phải là kiểu Int & lớn hơn 0 !')
-    
-    hex_colors = '#' + str().join(random.choice('ABCDEF0123456789') for _ in range(6))
+
+    hex_colors = '#' + str().join(random.choice('ABCDEF0123456789')
+                                  for _ in range(6))
     hex_colors = [hex_colors for _ in range(num_color)]
     return hex_colors
