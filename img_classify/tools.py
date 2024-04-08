@@ -2,9 +2,8 @@ import os
 
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
-from keras.utils import img_to_array
+from keras.utils import img_to_array, load_img
 from sklearn.model_selection import train_test_split
-from PIL import Image
 import random
 
 
@@ -117,11 +116,9 @@ def image_augmentation_by_class(ds_path=None, batch_size=32, num_img=50, img_siz
         image_path = os.path.join(ds_path, label)
         for image in os.listdir(image_path):
             if image.split('.')[1] in ('jpg', 'png', 'jpeg'):
-                with Image.open(os.path.join(image_path, image)) as img:
-                    img = img.convert('RGB')
-                    img = img.resize(img_size)
-                    img = img_to_array(img)
-                    images.append(img)
+                img = load_img(os.path.join(image_path, image),
+                               target_size=img_size)
+                img = img_to_array(img)
         images = np.asarray(images, dtype=np.float32)
         i = 0
         for _ in img_model.flow(
@@ -181,11 +178,10 @@ def fix_imbalance_with_image_augmentation(ds_path=None, img_size=(128, 128), img
             print(f'Bắt đầu khởi tạo thêm {num_img} ảnh cho nhãn {a_class}')
             for image in os.listdir(image_path):
                 if image.split('.')[1] in ('jpg', 'png', 'jpeg'):
-                    with Image.open(os.path.join(image_path, image)) as img:
-                        img = img.convert('RGB')
-                        img = img.resize(img_size)
-                        img = img_to_array(img)
-                        images.append(img)
+                    img = load_img(os.path.join(
+                        image_path, image), target_size=img_size)
+                    img = img_to_array(img)
+                    images.append(img)
             images = np.asarray(images, dtype=np.float16)
             for _ in img_model.flow(
                 images,
