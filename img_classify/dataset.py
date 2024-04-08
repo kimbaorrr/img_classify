@@ -50,7 +50,7 @@ def check_balance(dir_path=None, classes=None, img_save_path=''):
     print(
         f'== MỨC CHÊNH LỆCH GIỮA CÁC LỚP SO VỚI LỚP CAO NHẤT ==')
     for a in range(len(y)):
-        print(f'Lớp {classes[a]}:', np.round(y[a] / v_max * 100, 2))
+        print(f'Lớp {classes[a]}:', np.round(y[a] / v_max, 2))
 
 
 def rand_image_viewer(dir_path=None, classes=None, cmap='viridis'):
