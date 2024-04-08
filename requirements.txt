@@ -1,4 +1,4 @@
-tensorflow==2.13.1
+keras==2.13.1
 seaborn
 kaggle
 scikit-learn
