@@ -104,7 +104,7 @@ def fix_imbalance_with_image_augmentation(images=None, labels=None, compose=None
         for i, (count_file, label) in enumerate(zip(count_file_per_class, labels)):
             if count_file < .95:
                 balanced = False
-                augmented = compose(image=images[i])
+                augmented = compose(image=np.array(images[i]))
                 labels = np.append(labels, label)
                 images = np.append(images, augmented['image'])
 
