@@ -98,13 +98,15 @@ def fix_imbalance_with_image_augmentation(images=None, labels=None, compose=None
         if count_file < .95:
             print(f'Nhãn {classes[cls]} bị mất cân bằng !')
 
+    images = np.array(images)
+    labels = np.array(labels)
     # Tạo vòng lặp cân bằng lớp
     while True:
         balanced = True
         for i, (count_file, label) in enumerate(zip(count_file_per_class, labels)):
             if count_file < .95:
                 balanced = False
-                augmented = compose(image=np.array(images[i]))
+                augmented = compose(image=images[i])
                 labels = np.append(labels, label)
                 images = np.append(images, augmented['image'])
 
@@ -115,6 +117,7 @@ def fix_imbalance_with_image_augmentation(images=None, labels=None, compose=None
         # Nếu tất cả đã cân bằng thì dừng vòng lặp
         if balanced:    
             break
+    return images, labels
 
 
 def random_rgb_color(num_color=3):
