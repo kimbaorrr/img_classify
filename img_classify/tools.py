@@ -86,8 +86,8 @@ def fix_imbalance_with_image_augmentation(images=None, labels=None, compose=None
     if type(compose) is not Compose:
         raise TypeError('Tham số compose phải là kiểu Compose !')
 
-    if type(classes) not in (tuple, list):
-        raise TypeError('Tham số classes phải là kiểu Tuple/List !')
+    if type(classes) not in (tuple, list, np.ndarray):
+        raise TypeError('Tham số classes phải là kiểu Tuple/List/Ndarray !')
 
     x = np.unique(labels)
     y = np.bincount(labels)
