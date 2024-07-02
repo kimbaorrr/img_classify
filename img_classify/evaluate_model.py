@@ -2,7 +2,6 @@ import os
 
 import numpy as np
 import seaborn as sns
-from keras.callbacks import History
 from matplotlib import pyplot as plt
 from sklearn.metrics import confusion_matrix
 import random
@@ -165,53 +164,3 @@ def heatmap_plot(true_labels=None, pred_labels=None, classes=None, categorical=T
         if img_save_path != '':
             plt.savefig(img_save_path)
         plt.show()
-
-
-# def EvalofTraining(history=None, img_save_path='./'):
-#     """
-#     Trình đánh giá quá trình Training
-#     Args:
-#             history: Object/History object, chứa lịch sử Training do hàm model.fit() trả về
-#             img_save_path: Str, vị trí xuất ảnh đánh giá (Mặc định: Vị trí hiện tại)
-#     Returns:
-#             In ảnh đánh giá quá trình Training gồm Loss & Accuracy sau mỗi Epoch
-#     """
-
-#     if type(history) not in (History, object):
-#         raise TypeError('Tham số history phải là một đối tượng History !')
-
-#     if not history:
-#         raise IndexError('Tham số history chứa mảng rỗng !')
-
-#     if not os.path.exists(img_save_path):
-#         os.mkdir(img_save_path)
-
-#     history = history.history
-#     epochs = len(history['loss'])
-#     len_of_epochs = range(1, epochs + 1)
-
-#     plt.title('Loss')
-#     plt.plot(len_of_epochs, history['loss'], 'ro', label='loss')
-#     plt.plot(len_of_epochs, history['val_loss'], 'b', label='val_loss')
-#     if max(len_of_epochs) <= 30:
-#         plt.xticks(len_of_epochs)
-#     plt.xlabel('Epochs')
-#     plt.ylabel('% (Percentage)')
-#     plt.legend()
-#     plt.grid(False if max(len_of_epochs) > 30 else True)
-#     if img_save_path != '':
-#         plt.savefig(os.path.join(img_save_path, 'loss.jpg'))
-#     plt.show()
-
-#     plt.title('Accuracy')
-#     plt.plot(len_of_epochs, history['accuracy'], 'ro', label='accuracy')
-#     plt.plot(len_of_epochs, history['val_accuracy'], 'b', label='val_accuracy')
-#     if max(len_of_epochs) <= 30:
-#         plt.xticks(len_of_epochs)
-#     plt.xlabel('Epochs')
-#     plt.ylabel('% (Percentage)')
-#     plt.legend()
-#     plt.grid(False if max(len_of_epochs) > 30 else True)
-#     if img_save_path != '':
-#         plt.savefig(os.path.join(img_save_path, 'accuracy.jpg'))
-#     plt.show()

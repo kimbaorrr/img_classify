@@ -1,11 +1,7 @@
-import os
-
 import numpy as np
-from keras.preprocessing.image import ImageDataGenerator
-from keras.utils import img_to_array, load_img
 from sklearn.model_selection import train_test_split
 import random
-
+from albumentations import Compose
 
 def train_test_val_split(images=None, labels=None, train_size=.60, test_size=.20, val_size=.20, random_state=30):
     """
@@ -71,129 +67,54 @@ def train_test_val_split(images=None, labels=None, train_size=.60, test_size=.20
         print('Quá trình tách dữ liệu bị lỗi !', str(ex))
 
 
-def image_augmentation_by_class(ds_path=None, batch_size=32, num_img=50, img_size=(128, 128), img_model=None,
-                                classes=None,
-                                exclude_class=None):
+def fix_imbalance_with_image_augmentation(images=None, labels=None, compose=None, classes=None):
     """
-    Trình tăng cường ảnh theo nhãn
-    :param ds_path: Str, đường dẫn tập dữ liệu
-    :param batch_size: Int, kích thước mỗi lô
-    :param num_img: Int, số lượng ảnh cho mỗi nhãn (Mặc định: 50)
-    :param img_size: Tuple/List, kích thước ảnh (Mặc định: 128 x 128)
-    :param img_model: ImageDataGeneration, mô hình tăng cường ảnh (dùng hàm ImageDataGeneration)
-    :param classes: Tuple/List, chứa các lớp của tập dữ liệu
-    :param exclude_class: Tuple/List, chứa các nhãn bị loại trừ khi tăng cường ảnh
-    :return Xuất ảnh đã tăng cường vào từng thư mục con của mỗi nhãn
-    """
-
-    if ds_path == '' or ds_path is None:
-        raise ValueError('Tham số ds_path không được để trống !')
-
-    if not os.path.exists(ds_path):
-        raise FileNotFoundError(
-            'Tham số ds_path chứa đường dẫn thư mục sai hoặc không tồn tại !')
-
-    if type(num_img) is not int:
-        raise TypeError('Tham số num_img phải là kiểu Int !')
-
-    if num_img <= 0:
-        raise ValueError('Tham số num_img phải lớn hơn hoặc bằng 0 !')
-
-    if type(img_size) not in (tuple, list):
-        raise TypeError('Tham số img_size phải là kiểu Tuple/List !')
-
-    if type(img_model) is not ImageDataGenerator:
-        raise TypeError('Tham số img_size phải là kiểu ImageDataGenerator !')
-
-    if type(classes) not in (tuple, list):
-        raise TypeError('Tham số classes phải là kiểu Tuple/List !')
-
-    print(f'=> Bắt đầu thêm {batch_size * num_img} ảnh cho các nhãn...')
-    for label in classes:
-        if label in exclude_class:
-            continue
-        images = []
-        image_path = os.path.join(ds_path, label)
-        for image in os.listdir(image_path):
-            if image.split('.')[1] in ('jpg', 'png', 'jpeg'):
-                img = load_img(os.path.join(image_path, image),
-                               target_size=img_size)
-                img = img_to_array(img)
-        images = np.asarray(images, dtype=np.float32)
-        i = 0
-        for _ in img_model.flow(
-            images,
-            batch_size=batch_size,
-            save_to_dir=image_path,
-            save_prefix='aug',
-            save_format='jpg'
-        ):
-            i += 1
-            if i > num_img:
-                break
-
-
-def fix_imbalance_with_image_augmentation(ds_path=None, img_size=(128, 128), img_model=None,
-                                          classes=None):
-    """
-    Tái cân bằng tập dữ liệu bằng phương pháp tăng cuờng ảnh
-    :param ds_path: Str, đường dẫn tập dữ liệu
-    :param img_size: Tuple/List, kích thước ảnh (Mặc định: 128 x 128)
-    :param img_model: ImageDataGeneration, mô hình tăng cường ảnh (dùng hàm ImageDataGeneration)
+    Tái cân bằng tập dữ liệu bằng phương pháp tăng cường ảnh dùng thư viện Albumentation
+    :param images: Ndarray, chứa tập ảnh đồng kích thước shape (n, w, h, c)
+    :param labels: Ndarray, chứa tập nhãn có kiểu số nguyên 
+    :param img_model: Albumentation Compose, mô hình tăng cường ảnh (dùng hàm Compose của thư viện Albumentation)
     :param classes: Tuple/List, chứa nhãn của tập dữ liệu
-    :return Xuất ảnh đã tăng cường vào từng thư mục con của mỗi nhãn
+    :return Xuất ảnh đã tăng cường vào 2 tập images và labels
     """
 
-    if ds_path == '' or ds_path is None:
-        raise ValueError('Tham số ds_path không được để trống !')
+    if not type(images) is np.ndarray:
+        raise TypeError('Tham số images phải là kiểu Ndarray !')
+    
+    if not type(labels) is np.ndarray:
+        raise TypeError('Tham số labels phải là kiểu Ndarray !')
 
-    if not os.path.exists(ds_path):
-        raise FileNotFoundError(
-            'Tham số ds_path chứa đường dẫn thư mục sai hoặc không tồn tại !')
-
-    if type(img_size) not in (tuple, list):
-        raise TypeError('Tham số img_size phải là kiểu Tuple/List !')
-
-    if type(img_model) is not ImageDataGenerator:
-        raise TypeError('Tham số img_size phải là kiểu ImageDataGenerator !')
+    if type(compose) is not Compose:
+        raise TypeError('Tham số compose phải là kiểu Compose !')
 
     if type(classes) not in (tuple, list):
         raise TypeError('Tham số classes phải là kiểu Tuple/List !')
 
-    count_files_per_class = []
+    x = np.unique(labels)
+    y = np.bincount(labels)
+    count_file_per_class = [count / max(y) for count in y]
 
-    for i in classes:
-        path = os.path.join(ds_path, i)
-        count_files_per_class.append(len(os.listdir(path)))
-    v_max = max(count_files_per_class)
-    for a in range(len(classes)):
-        a_class = classes[a]
-        num_img = v_max - count_files_per_class[a]
-        if count_files_per_class[a] / v_max >= .95:
-            print(f'Loại trừ nhãn {a_class} do đã cân bằng !')
-        else:
-            images = []
-            i = 0
-            image_path = os.path.join(ds_path, a_class)
-            print(f'Bắt đầu khởi tạo thêm {num_img} ảnh cho nhãn {a_class}')
-            for image in os.listdir(image_path):
-                if image.split('.')[1] in ('jpg', 'png', 'jpeg'):
-                    img = load_img(os.path.join(
-                        image_path, image), target_size=img_size)
-                    img = img_to_array(img)
-                    images.append(img)
-            images = np.asarray(images, dtype=np.float16)
-            for _ in img_model.flow(
-                images,
-                seed=69,
-                batch_size=1,
-                save_to_dir=image_path,
-                save_prefix='aug',
-                save_format='jpg'
-            ):
-                i += 1
-                if i > num_img:
-                    break
+    # Kiểm tra độ cân bằng giữa các lớp
+    for cls, count_file in zip(x, count_file_per_class):
+        if count_file < .95:
+            print(f'Nhãn {classes[cls]} bị mất cân bằng !')
+
+    # Tạo vòng lặp cân bằng lớp
+    while True:
+        balanced = True
+        for i, (count_file, label) in enumerate(zip(count_file_per_class, labels)):
+            if count_file < .95:
+                balanced = False
+                augmented = compose(image=images[i])
+                labels = np.append(labels, label)
+                images = np.append(images, augmented['image'])
+
+        # Tính toán lại tỉ lệ các nhãn
+        y = np.bincount(labels)
+        count_file_per_class = [count / max(y) for count in y]
+
+        # Nếu tất cả đã cân bằng thì dừng vòng lặp
+        if balanced:    
+            break
 
 
 def random_rgb_color(num_color=3):
